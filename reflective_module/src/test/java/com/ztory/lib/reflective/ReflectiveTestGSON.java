@@ -28,31 +28,31 @@ public class ReflectiveTestGSON extends TestCase {
     }
 
     public void testMapNumberValueOptStringGSON() throws Exception {
-        Mapper root = Mapper.json(JSON_STRING_1);
+        Mapper root = new Gson().fromJson(JSON_STRING_1, Mapper.class);
         String oneValue = root.optString("obj1", "obj_key2");
         assertNull(oneValue);
     }
 
     public void testMapStringValueOptNumberGSON() throws Exception {
-        Mapper root = Mapper.json(JSON_STRING_1);
+        Mapper root = new Gson().fromJson(JSON_STRING_1, Mapper.class);
         Number oneValue = root.optNumber("obj1", "obj1_one", "mega_nest_1", "mega_key1");
         assertNull(oneValue);
     }
 
     public void testMapNumberValueGSON() throws Exception {
-        Mapper root = Mapper.json(JSON_STRING_1);
+        Mapper root = new Gson().fromJson(JSON_STRING_1, Mapper.class);
         Number oneValue = root.getNumber("obj1", "obj_key2");
         assertEquals(48.0, oneValue);
     }
 
     public void testMapStringValueGSON() throws Exception {
-        Mapper root = Mapper.json(JSON_STRING_1);
+        Mapper root = new Gson().fromJson(JSON_STRING_1, Mapper.class);
         String oneValue = root.getString("obj1", "obj1_one", "mega_nest_1", "mega_key1");
         assertEquals("balleriffico", oneValue);
     }
 
     public void testMapValueGSON() throws Exception {
-        Mapper root = Mapper.json(JSON_STRING_1);
+        Mapper root = new Gson().fromJson(JSON_STRING_1, Mapper.class);
         Number oneValue = root.getValue("obj1", "obj1_one", "mega_nest_1", "mega_map", "one");
         assertEquals(1.0, oneValue);
     }
@@ -66,7 +66,7 @@ public class ReflectiveTestGSON extends TestCase {
     }
 
     public void testMapNestedListGSON() throws Exception {
-        Mapper root = Mapper.json(new Gson(), JSON_STRING_1);
+        Mapper root = new Gson().fromJson(JSON_STRING_1, Mapper.class);
         assertEquals(4.0, root.getList("obj1", "obj1_one", "mega_nest_1", "mega_array").get(0));
         assertEquals(8.0, root.getList("obj1", "obj1_one", "mega_nest_1", "mega_array").get(1));
         assertEquals(12.0, root.getList("obj1", "obj1_one", "mega_nest_1", "mega_array").get(2));

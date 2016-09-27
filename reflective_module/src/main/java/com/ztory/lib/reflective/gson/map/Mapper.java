@@ -1,7 +1,5 @@
 package com.ztory.lib.reflective.gson.map;
 
-import com.google.gson.Gson;
-
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,16 +8,6 @@ import java.util.Map;
  * Created by jonruna on 26/09/16.
  */
 public class Mapper extends LinkedHashMap<String, Object> {
-
-    private static final Gson sGson = new Gson();
-
-    public static Mapper json(String jsonString) {
-        return sGson.fromJson(jsonString, Mapper.class);
-    }
-
-    public static Mapper json(Gson gson, String jsonString) {
-        return gson.fromJson(jsonString, Mapper.class);
-    }
 
     public Number optNumber(String... keys) {
         try {
