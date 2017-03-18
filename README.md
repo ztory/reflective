@@ -11,6 +11,7 @@ jsonObject.put("name", theName);
 ProfileInterface profile = Reflective.getReflectiveInstance(
         ProfileInterface.class,
         jsonObject,
+        Reflective.LOWERCASE_UNDERSCORE,
         null
 );
 Log.d(
@@ -42,7 +43,7 @@ allprojects {
 #### Step 2
 In your module `build.gradle` add this:
 ```
-compile 'com.ztory.lib.reflective:reflective_module:1.0.0'
+compile 'com.ztory.lib.reflective:reflective_module:1.1.0'
 ```
 
 ## What else?
