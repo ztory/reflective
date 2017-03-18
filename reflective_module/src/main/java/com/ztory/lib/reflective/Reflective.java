@@ -72,6 +72,21 @@ public class Reflective {
         }
     };
 
+    public static final ReflectiveKeyParser CAMELCASE = new ReflectiveKeyParser() {
+        @Override
+        public String getParsedKey(int startOffset, String key) {
+
+            String returnKey = key.substring(startOffset);
+
+            String lowerCaseFirstChar = String.valueOf(returnKey.charAt(0))
+                    .toLowerCase(Locale.ENGLISH);
+
+            returnKey = lowerCaseFirstChar + returnKey.substring(1);
+
+            return returnKey;
+        }
+    };
+
     private static final char UNDERSCORE = '_';
 
     /**
@@ -303,7 +318,7 @@ public class Reflective {
         return returnList;
     }
 
-    private static <T> String getReflectiveNamespaceSafe(Class<T> clazz) {
+    public static <T> String getReflectiveNamespaceSafe(Class<T> clazz) {
         ReflectiveNamespace reflectiveNamespace = clazz.getAnnotation(ReflectiveNamespace.class);
         if (reflectiveNamespace != null) {
             return reflectiveNamespace.value();

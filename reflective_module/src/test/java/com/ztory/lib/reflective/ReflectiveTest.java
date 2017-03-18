@@ -4,6 +4,8 @@ import android.graphics.Point;
 
 import junit.framework.TestCase;
 
+import org.json.JSONObject;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -56,6 +58,76 @@ public class ReflectiveTest extends TestCase {
     @Override
     protected void tearDown() throws Exception {
         super.tearDown();
+    }
+
+    public void testBizTestJSONObjectCamelCaseKeys() throws Exception {
+
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("veryLongKeyNameForStringValue", "veryLongValue");
+        jsonObject.put("name", "Jonny");
+        jsonObject.put("title", "BaLLeR");
+        jsonObject.put("description", "Very very kewl!!!!");
+        jsonObject.put("baller", true);
+        jsonObject.put("positionX", 123.456);
+        jsonObject.put("positionY", 123.456);
+        jsonObject.put("positionW", 123.456);
+        jsonObject.put("positionH", 123.456);
+
+        BizTestJSONObject bizTestJSON = Reflective.getReflectiveInstance(
+                BizTestJSONObject.class,
+                new ReflectiveInvocationHandler(
+                        Reflective.getReflectiveNamespaceSafe(BizTestJSONObject.class),
+                        jsonObject,
+                        Reflective.CAMELCASE,
+                        null//theCustomKeyMap
+                )
+        );
+
+        Reflective.checkReflectiveRequired(BizTestJSONObject.class, bizTestJSON);
+
+        assertEquals(bizTestJSON.getName(), jsonObject.getString("name"));
+        assertEquals(bizTestJSON.getTitle(), jsonObject.getString("title"));
+        assertEquals(bizTestJSON.getDescription(), jsonObject.getString("description"));
+        assertTrue(bizTestJSON.isBaller());
+        assertEquals(
+                bizTestJSON.getVeryLongKeyNameForStringValue(),
+                jsonObject.getString("veryLongKeyNameForStringValue")
+        );
+    }
+
+    public void testBizTestJSONObject() throws Exception {
+
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("very_long_key_name_for_string_value", "veryLongValue");
+        jsonObject.put("name", "Jonny");
+        jsonObject.put("title", "BaLLeR");
+        jsonObject.put("description", "Very very kewl!!!!");
+        jsonObject.put("baller", true);
+        jsonObject.put("position_x", 123.456);
+        jsonObject.put("position_y", 123.456);
+        jsonObject.put("position_w", 123.456);
+        jsonObject.put("position_h", 123.456);
+
+        BizTestJSONObject bizTestJSON = Reflective.getReflectiveInstance(
+                BizTestJSONObject.class,
+                new ReflectiveInvocationHandler(
+                        Reflective.getReflectiveNamespaceSafe(BizTestJSONObject.class),
+                        jsonObject,
+                        Reflective.LOWERCASE_UNDERSCORE,
+                        null//theCustomKeyMap
+                )
+        );
+
+        Reflective.checkReflectiveRequired(BizTestJSONObject.class, bizTestJSON);
+
+        assertEquals(bizTestJSON.getName(), jsonObject.getString("name"));
+        assertEquals(bizTestJSON.getTitle(), jsonObject.getString("title"));
+        assertEquals(bizTestJSON.getDescription(), jsonObject.getString("description"));
+        assertTrue(bizTestJSON.isBaller());
+        assertEquals(
+                bizTestJSON.getVeryLongKeyNameForStringValue(),
+                jsonObject.getString("very_long_key_name_for_string_value")
+        );
     }
 
     public void testReflectiveFetchClassMethodNamespace() throws Exception {
