@@ -263,15 +263,16 @@ public class Reflective {
     public static <T> T getReflectiveInstance(
             Class<T> clazz,
             final Map<String, Object> valueMap,
-            Map<String, String> theCustomKeyMap
+            ReflectiveKeyParser keyParser,
+            Map<String, String> customKeyMap
     ) {
         return getReflectiveInstance(
                 clazz,
                 new ReflectiveInvocationHandler(
                         getReflectiveNamespaceSafe(clazz),
                         valueMap,
-                        LOWERCASE_UNDERSCORE,
-                        theCustomKeyMap
+                        keyParser,
+                        customKeyMap
                 )
         );
     }
@@ -287,15 +288,16 @@ public class Reflective {
     public static <T> T getReflectiveInstance(
             Class<T> clazz,
             final JSONObject valueJSON,
-            Map<String, String> theCustomKeyMap
+            ReflectiveKeyParser keyParser,
+            Map<String, String> customKeyMap
     ) {
         return getReflectiveInstance(
                 clazz,
                 new ReflectiveInvocationHandler(
                         getReflectiveNamespaceSafe(clazz),
                         valueJSON,
-                        LOWERCASE_UNDERSCORE,
-                        theCustomKeyMap
+                        keyParser,
+                        customKeyMap
                 )
         );
     }
@@ -303,7 +305,8 @@ public class Reflective {
     public static <T> List<T> getMultiReflectiveInstances(
             Class<T> clazz,
             JSONArray JSONArrayValues,
-            Map<String, String> theCustomKeyMap
+            ReflectiveKeyParser keyParser,
+            Map<String, String> customKeyMap
     ) throws JSONException {
         List<T> returnList = new ArrayList<>(JSONArrayValues.length());
         for (int i = 0; i < JSONArrayValues.length(); i++) {
@@ -311,7 +314,8 @@ public class Reflective {
                     getReflectiveInstance(
                             clazz,
                             JSONArrayValues.getJSONObject(i),
-                            theCustomKeyMap
+                            keyParser,
+                            customKeyMap
                     )
             );
         }

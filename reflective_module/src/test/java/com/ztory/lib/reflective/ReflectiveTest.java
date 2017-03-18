@@ -4,11 +4,13 @@ import android.graphics.Point;
 
 import junit.framework.TestCase;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -43,6 +45,7 @@ public class ReflectiveTest extends TestCase {
             sBizProfile = Reflective.getReflectiveInstance(
                     BizTestProfileCustom.class,
                     sProfileMap,
+                    Reflective.LOWERCASE_UNDERSCORE,
                     null
             );
         } catch (Exception e) {
@@ -58,6 +61,90 @@ public class ReflectiveTest extends TestCase {
     @Override
     protected void tearDown() throws Exception {
         super.tearDown();
+    }
+
+    public void testBizTestJSONObjectCamelCaseMulti() throws Exception {
+
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("veryLongKeyNameForStringValue", "veryLongValue");
+        jsonObject.put("name", "Jonny");
+        jsonObject.put("title", "BaLLeR");
+        jsonObject.put("description", "Very very kewl!!!!");
+        jsonObject.put("baller", true);
+        jsonObject.put("positionX", 123.456);
+        jsonObject.put("positionY", 123.456);
+        jsonObject.put("positionW", 123.456);
+        jsonObject.put("positionH", 123.456);
+
+        JSONArray jsonArray = new JSONArray();
+        jsonArray.put(jsonObject);
+        jsonArray.put(jsonObject);
+        jsonArray.put(jsonObject);
+        jsonArray.put(jsonObject);
+        jsonArray.put(jsonObject);
+        jsonArray.put(jsonObject);
+        jsonArray.put(jsonObject);
+        jsonArray.put(jsonObject);
+
+        List<BizTestJSONObject> bizTestJSONlist = Reflective.getMultiReflectiveInstances(
+                BizTestJSONObject.class,
+                jsonArray,
+                Reflective.CAMELCASE,
+                null
+        );
+
+        Reflective.checkReflectiveRequired(BizTestJSONObject.class, bizTestJSONlist);
+
+        assertEquals(bizTestJSONlist.get(0).getName(), jsonObject.getString("name"));
+        assertEquals(bizTestJSONlist.get(0).getTitle(), jsonObject.getString("title"));
+        assertEquals(bizTestJSONlist.get(0).getDescription(), jsonObject.getString("description"));
+        assertTrue(bizTestJSONlist.get(0).isBaller());
+        assertEquals(
+                bizTestJSONlist.get(0).getVeryLongKeyNameForStringValue(),
+                jsonObject.getString("veryLongKeyNameForStringValue")
+        );
+        assertEquals(8, bizTestJSONlist.size());
+    }
+
+    public void testBizTestJSONObjectCamelCaseKeys2() throws Exception {
+
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("veryLongKeyNameForStringValue", "veryLongValue");
+        jsonObject.put("name", "Jonny");
+        jsonObject.put("title", "BaLLeR");
+        jsonObject.put("description", "Very very kewl!!!!");
+        jsonObject.put("baller", true);
+        jsonObject.put("positionX", 123.456);
+        jsonObject.put("positionY", 123.456);
+        jsonObject.put("positionW", 123.456);
+        jsonObject.put("positionH", 123.456);
+
+        BizTestJSONObject bizTestJSON = Reflective.getReflectiveInstance(
+                BizTestJSONObject.class,
+                jsonObject,
+                Reflective.CAMELCASE,
+                null
+        );
+//        BizTestJSONObject bizTestJSON = Reflective.getReflectiveInstance(
+//                BizTestJSONObject.class,
+//                new ReflectiveInvocationHandler(
+//                        Reflective.getReflectiveNamespaceSafe(BizTestJSONObject.class),
+//                        jsonObject,
+//                        Reflective.CAMELCASE,
+//                        null//theCustomKeyMap
+//                )
+//        );
+
+        Reflective.checkReflectiveRequired(BizTestJSONObject.class, bizTestJSON);
+
+        assertEquals(bizTestJSON.getName(), jsonObject.getString("name"));
+        assertEquals(bizTestJSON.getTitle(), jsonObject.getString("title"));
+        assertEquals(bizTestJSON.getDescription(), jsonObject.getString("description"));
+        assertTrue(bizTestJSON.isBaller());
+        assertEquals(
+                bizTestJSON.getVeryLongKeyNameForStringValue(),
+                jsonObject.getString("veryLongKeyNameForStringValue")
+        );
     }
 
     public void testBizTestJSONObjectCamelCaseKeys() throws Exception {
@@ -146,6 +233,7 @@ public class ReflectiveTest extends TestCase {
         BizDummy bizDummy = Reflective.getReflectiveInstance(
                 BizDummy.class,
                 theDummyMap,
+                Reflective.LOWERCASE_UNDERSCORE,
                 null
         );
 
@@ -166,6 +254,7 @@ public class ReflectiveTest extends TestCase {
         BizDummy bizDummy = Reflective.getReflectiveInstance(
                 BizDummy.class,
                 theDummyMap,
+                Reflective.LOWERCASE_UNDERSCORE,
                 null
         );
 
@@ -197,6 +286,7 @@ public class ReflectiveTest extends TestCase {
         BizDummy bizDummy = Reflective.getReflectiveInstance(
                 BizDummy.class,
                 theDummyMap,
+                Reflective.LOWERCASE_UNDERSCORE,
                 null
         );
 
@@ -230,6 +320,7 @@ public class ReflectiveTest extends TestCase {
         BizDummy bizDummy = Reflective.getReflectiveInstance(
                 BizDummy.class,
                 theDummyMap,
+                Reflective.LOWERCASE_UNDERSCORE,
                 null
         );
 
@@ -255,6 +346,7 @@ public class ReflectiveTest extends TestCase {
         BizDummy bizDummy = Reflective.getReflectiveInstance(
                 BizDummy.class,
                 theDummyMap,
+                Reflective.LOWERCASE_UNDERSCORE,
                 null
         );
 
@@ -269,6 +361,7 @@ public class ReflectiveTest extends TestCase {
         BizDummy bizDummy = Reflective.getReflectiveInstance(
                 BizDummy.class,
                 theDummyMap,
+                Reflective.LOWERCASE_UNDERSCORE,
                 null
         );
 
@@ -283,6 +376,7 @@ public class ReflectiveTest extends TestCase {
         BizDummy bizDummy = Reflective.getReflectiveInstance(
                 BizDummy.class,
                 theDummyMap,
+                Reflective.LOWERCASE_UNDERSCORE,
                 null
         );
 
@@ -297,6 +391,7 @@ public class ReflectiveTest extends TestCase {
         BizDummy bizDummy = Reflective.getReflectiveInstance(
                 BizDummy.class,
                 theDummyMap,
+                Reflective.LOWERCASE_UNDERSCORE,
                 null
         );
 
@@ -313,6 +408,7 @@ public class ReflectiveTest extends TestCase {
         BizDummy bizDummy = Reflective.getReflectiveInstance(
                 BizDummy.class,
                 theDummyMap,
+                Reflective.LOWERCASE_UNDERSCORE,
                 null
         );
 
@@ -327,6 +423,7 @@ public class ReflectiveTest extends TestCase {
         BizDummy bizDummy = Reflective.getReflectiveInstance(
                 BizDummy.class,
                 theDummyMap,
+                Reflective.LOWERCASE_UNDERSCORE,
                 null
         );
 
@@ -343,6 +440,7 @@ public class ReflectiveTest extends TestCase {
         BizDummy bizDummy = Reflective.getReflectiveInstance(
                 BizDummy.class,
                 theDummyMap,
+                Reflective.LOWERCASE_UNDERSCORE,
                 null
         );
 
@@ -370,6 +468,7 @@ public class ReflectiveTest extends TestCase {
         BizTestProfileCustom bizProfile = Reflective.getReflectiveInstance(
                 BizTestProfileCustom.class,
                 sProfileMap,
+                Reflective.LOWERCASE_UNDERSCORE,
                 customKeys
         );
 
@@ -497,6 +596,7 @@ public class ReflectiveTest extends TestCase {
         BizTestProfileCustom bizProfile = Reflective.getReflectiveInstance(
                 BizTestProfileCustom.class,// Using subclass of BizTestProfileCustom for logic
                 sProfileMap,
+                Reflective.LOWERCASE_UNDERSCORE,
                 null
         );
         Reflective.checkReflectiveRequired(
