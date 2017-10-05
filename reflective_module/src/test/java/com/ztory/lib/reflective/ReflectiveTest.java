@@ -215,6 +215,20 @@ public class ReflectiveTest extends TestCase {
                 bizTestJSON.getVeryLongKeyNameForStringValue(),
                 jsonObject.getString("very_long_key_name_for_string_value")
         );
+
+        // Used to verify that hashCode() doesnt hang VM
+        assertTrue(bizTestJSON.hashCode() <= Integer.MAX_VALUE);
+
+        // Used to verify that equals() doesnt hang VM
+        assertTrue(bizTestJSON.equals(bizTestJSON));
+
+        // Used to verify that toString() doesnt hang VM
+        assertTrue(bizTestJSON.toString().equals(bizTestJSON.toString()));
+
+        // Used to verify that getClass() doesnt hang VM
+        assertNotNull(bizTestJSON.getClass());
+        assertTrue(bizTestJSON.getClass().equals(bizTestJSON.getClass()));
+        assertFalse(bizTestJSON.getClass().equals(Reflective.class));
     }
 
     public void testReflectiveFetchClassMethodNamespace() throws Exception {

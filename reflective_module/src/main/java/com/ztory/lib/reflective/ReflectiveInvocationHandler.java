@@ -163,6 +163,24 @@ public class ReflectiveInvocationHandler implements InvocationHandler {
 
             String methodName = method.getName();
 
+            if (methodName.equals("hashCode")) {
+                if (jsonMode) {
+                    return membersJSON.hashCode();
+                } else {
+                    return membersMap.hashCode();
+                }
+            } else if (methodName.equals("equals")) {
+                return proxy == args[0];
+            } else if (methodName.equals("toString")) {
+                if (jsonMode) {
+                    return membersJSON.toString();
+                } else {
+                    return membersMap.toString();
+                }
+            } else if (methodName.equals("clone")) {
+                throw new CloneNotSupportedException();
+            }
+
             if (hasCustomKeyMap) {
                 String forcedReflectiveKey = customKeyMap.get(methodName);
                 if (forcedReflectiveKey != null) {
