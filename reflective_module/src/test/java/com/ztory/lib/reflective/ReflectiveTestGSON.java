@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.ztory.lib.reflective.gson.map.Mapper;
 
+import com.ztory.lib.reflective.gson.map.MapperList;
 import java.util.HashMap;
 import junit.framework.TestCase;
 
@@ -16,7 +17,12 @@ import java.util.Map;
  */
 public class ReflectiveTestGSON extends TestCase {
 
+    private static final Gson GSON = new Gson();
+
     private static final String JSON_STRING_1 = "{\"key0\": true,\"key1\": \"jonny\",\"key2\": \"anny\",\"obj1\": {\"obj1_one\": {\"mega_nest_1\": {\"mega_map\": {\"one\": 1, \"two\": 2}, \"mega_array\": [4, 8, 12], \"mega_key1\": \"balleriffico\"}, \"nesto1\": \"tjolahopp\"}, \"obj_key1\": \"ork\",\"obj_key2\": 48, \"obj_array\": [\"one\", 2, 3], \"obj_array_two\": [4, 5, 6]}}";
+    private static final String JSON_STRING_ARRAY = "[{\"_id\":\"dsahudasi4234444\",\"title\":\"hej1\",\"description\":\"1tjenare där!\",\"nest_list\":[{\"nest_string\":\"tjo\",\"nest_number\":1244.3432,\"nestX\":{\"nestX_list\":[{\"deepz\":\"is it not?!\"},{\"deepz2\":\"is it not mate?!\"}]}}]},{\"_id\":\"dsahudasi4235555\",\"title\":\"hej2\",\"description\":\"2tjenare där!\"},{\"_id\":\"dsahudasi42323299\",\"title\":\"hej3\",\"description\":\"3tjenare där!\"},{\"_id\":\"dsahudasi423666\",\"title\":\"hej4\",\"description\":\"4tjenare där!\"}]";
+
+    private static final MapperList sMapperList = GSON.fromJson(JSON_STRING_ARRAY, MapperList.class);
 
     @Override
     protected void setUp() throws Exception {
@@ -26,6 +32,36 @@ public class ReflectiveTestGSON extends TestCase {
     @Override
     protected void tearDown() throws Exception {
         super.tearDown();
+    }
+
+//    public void testMapperListNested1000000() throws Exception {
+//        for (int i = 0; i < 1000000; i++) { testMapperListNested(); }
+//    }
+
+    public void testMapperListNested() throws Exception {
+
+        assertEquals(4, sMapperList.size());
+        Mapper mapper = sMapperList.get(0);
+        assertEquals("tjo", mapper.getVal(String.class, "nest_list", 0, "nest_string"));
+        assertEquals(1244.3432, mapper.getVal(String.class, "nest_list", 0, "nest_number"));
+
+        assertEquals(
+            "is it not?!",
+            mapper.getVal(String.class, "nest_list", 0, "nestX", "nestX_list", 0, "deepz")
+        );
+
+        assertEquals(
+            "is it not mate?!",
+            mapper.optString("nest_list", 0, "nestX", "nestX_list", 1, "deepz2")
+        );
+    }
+
+    public void testMapperList() throws Exception {
+        MapperList mapperList = new Gson().fromJson(JSON_STRING_ARRAY, MapperList.class);
+        assertEquals(4, mapperList.size());
+        Mapper mapper = mapperList.get(0);
+        assertEquals("tjo", mapper.getList(Map.class, "nest_list").get(0).get("nest_string"));
+        assertEquals(1244.3432, mapper.getList(Map.class, "nest_list").get(0).get("nest_number"));
     }
 
     public void testMapNumberValueOptStringGSON() throws Exception {
@@ -44,7 +80,7 @@ public class ReflectiveTestGSON extends TestCase {
         Mapper root = new Gson().fromJson(JSON_STRING_1, Mapper.class);
         Number oneValue = root.getNumber("obj1", "obj_key2");
         assertEquals(48.0, oneValue);
-        Double dblValue = root.getVal(true, Double.class, "obj1", "obj_key2");
+        Double dblValue = root.optVal(Double.class, "obj1", "obj_key2");
         assertNotNull(dblValue);
     }
 
@@ -60,7 +96,7 @@ public class ReflectiveTestGSON extends TestCase {
         theSubclass.dummyInteger = 99;
         Mapper theMapper = new Mapper();
         theMapper.put("dummy", theSubclass);
-        DummyClassBase theBaseClass = theMapper.getVal(true, DummyClassBase.class, "dummy");
+        DummyClassBase theBaseClass = theMapper.optVal(DummyClassBase.class, "dummy");
         assertNotNull(theBaseClass);
         assertEquals(theBaseClass.dummyString, theSubclass.dummyString);
     }
@@ -73,9 +109,9 @@ public class ReflectiveTestGSON extends TestCase {
 
     public void testMapValueGSON() throws Exception {
         Mapper root = new Gson().fromJson(JSON_STRING_1, Mapper.class);
-        String oneStringValue = root.getVal(true, String.class, "obj1", "obj1_one", "mega_nest_1", "mega_map", "one");
+        String oneStringValue = root.optVal(String.class, "obj1", "obj1_one", "mega_nest_1", "mega_map", "one");
         assertNull(oneStringValue);
-        Number oneValue = root.getVal(false, Number.class, "obj1", "obj1_one", "mega_nest_1", "mega_map", "one");
+        Number oneValue = root.getVal(Number.class, "obj1", "obj1_one", "mega_nest_1", "mega_map", "one");
         assertEquals(1.0, oneValue);
     }
 

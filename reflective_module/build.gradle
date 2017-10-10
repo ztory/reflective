@@ -28,8 +28,8 @@ dependencies {
     testCompile 'junit:junit:4.12'
     testCompile 'org.json:json:20140107'
 
-    testCompile 'com.google.code.gson:gson:2.7'
-    debugCompile 'com.google.code.gson:gson:2.7'
+    testCompile 'com.google.code.gson:gson:2.8.2'
+    debugCompile 'com.google.code.gson:gson:2.8.2'
 }
 
 uploadArchives {
