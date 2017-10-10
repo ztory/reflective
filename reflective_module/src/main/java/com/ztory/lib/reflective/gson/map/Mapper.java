@@ -47,6 +47,56 @@ public class Mapper extends LinkedHashMap<String, Object> {
     return getValue(false, clazz, keys);
   }
 
+  public <T> T putValue(T value, boolean safeMode, Class<T> clazz, Object... keys) {
+    try {
+      Object returnObject = this;
+      Object iterKey;
+      for (int i = 0; i < keys.length - 1; i++) {
+        iterKey = keys[i];
+        if (iterKey instanceof String) {
+          returnObject = ((Map<String, Object>) returnObject).get(iterKey);
+        } else if (iterKey instanceof Integer) {
+          if ((Integer) iterKey < 0) {
+            returnObject = ((List<Object>) returnObject).get(((List<Object>) returnObject).size() + (Integer) iterKey);
+          } else {
+            returnObject = ((List<Object>) returnObject).get((Integer) iterKey);
+          }
+        } else if (!safeMode) {
+          throw new IllegalStateException("iterKey is not String or Integer: " + iterKey);
+        }
+      }
+      iterKey = keys[keys.length - 1];
+      if (iterKey instanceof String) {
+        returnObject = ((Map<String, Object>) returnObject).put((String) iterKey, value);
+      } else if (iterKey instanceof Integer) {
+        List list = ((List<Object>) returnObject);
+        final int putIndex;
+        if ((Integer) iterKey < 0) {
+          putIndex = list.size() + (Integer) iterKey;
+          returnObject = list.get(putIndex);
+          list.add(putIndex + 1, value);
+        } else {
+          putIndex = (Integer) iterKey;
+          returnObject = list.get(putIndex);
+          list.add(putIndex, value);
+        }
+      } else if (!safeMode) {
+        throw new IllegalStateException("iterKey is not String or Integer: " + iterKey);
+      }
+      if (!safeMode || (returnObject != null && clazz.isAssignableFrom(returnObject.getClass()))) {
+        return (T) returnObject;
+      } else {
+        return null;
+      }
+    } catch (Exception e) {
+      if (!safeMode) {
+        throw e;
+      } else {
+        return null;
+      }
+    }
+  }
+
   public <T> T getValue(boolean safeMode, Class<T> clazz, Object... keys) {
     try {
       Object returnObject = this;
@@ -56,7 +106,11 @@ public class Mapper extends LinkedHashMap<String, Object> {
         if (iterKey instanceof String) {
           returnObject = ((Map<String, Object>) returnObject).get(iterKey);
         } else if (iterKey instanceof Integer) {
-          returnObject = ((List<Object>) returnObject).get((Integer) iterKey);
+          if ((Integer) iterKey < 0) {
+            returnObject = ((List<Object>) returnObject).get(((List<Object>) returnObject).size() + (Integer) iterKey);
+          } else {
+            returnObject = ((List<Object>) returnObject).get((Integer) iterKey);
+          }
         } else if (!safeMode) {
           throw new IllegalStateException("iterKey is not String or Integer: " + iterKey);
         }

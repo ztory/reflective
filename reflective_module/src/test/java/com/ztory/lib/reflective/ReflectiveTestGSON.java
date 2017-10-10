@@ -1,5 +1,7 @@
 package com.ztory.lib.reflective;
 
+import static org.junit.Assert.assertNotEquals;
+
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.ztory.lib.reflective.gson.map.Mapper;
@@ -37,6 +39,69 @@ public class ReflectiveTestGSON extends TestCase {
 //    public void testMapperListNested1000000() throws Exception {
 //        for (int i = 0; i < 1000000; i++) { testMapperListNested(); }
 //    }
+
+    public void testMapperNestedPut() throws Exception {
+        MapperList mapperList = GSON.fromJson(JSON_STRING_ARRAY, MapperList.class);
+        assertEquals(4, mapperList.size());
+        Mapper mapper = mapperList.get(0);
+        assertEquals("tjo", mapper.getVal(String.class, "nest_list", 0, "nest_string"));
+        String jsonString = GSON.toJson(mapperList, MapperList.class);
+        assertEquals(JSON_STRING_ARRAY, jsonString);
+
+        mapper.putValue("putValz2000", false, String.class, "nest_list", -1, "nest_string_new");
+        assertEquals("tjo", mapper.getVal(String.class, "nest_list", 0, "nest_string"));
+        assertEquals("putValz2000", mapper.getVal(String.class, "nest_list", -1, "nest_string_new"));
+
+        assertEquals(1, mapper.getList(Object.class, "nest_list").size());
+        mapper.putValue("putListItemEnd", false, String.class, "nest_list", -1);
+        assertEquals("putListItemEnd", mapper.getVal(String.class, "nest_list", -1));
+        assertEquals(2, mapper.getList(Object.class, "nest_list").size());
+        assertEquals("putValz2000", mapper.getVal(String.class, "nest_list", -2, "nest_string_new"));
+        mapper.putValue("putListItemEnd-1", false, String.class, "nest_list", -2);
+        assertEquals("putListItemEnd-1", mapper.getVal(String.class, "nest_list", -2));
+        assertEquals(3, mapper.getList(Object.class, "nest_list").size());
+        assertEquals(mapper.getVal(String.class, "nest_list", 1), mapper.getVal(String.class, "nest_list", -2));
+        mapper.putValue("putListItemStart", false, String.class, "nest_list", 0);
+        assertEquals("putListItemStart", mapper.getVal(String.class, "nest_list", 0));
+        assertEquals(4, mapper.getList(Object.class, "nest_list").size());
+        assertEquals(mapper.getVal(String.class, "nest_list", 2), mapper.getVal(String.class, "nest_list", -2));
+        Object valIndex1 = mapper.getVal(String.class, "nest_list", 1);
+        assertEquals(valIndex1, mapper.putValue("newIndex1Value", false, String.class, "nest_list", 1));
+        assertEquals("newIndex1Value", mapper.getVal(String.class, "nest_list", 1));
+        assertNotEquals(valIndex1, mapper.getVal(String.class, "nest_list", 1));
+        assertEquals(
+            mapper.getList(Object.class, "nest_list").get(0),
+            mapper.getVal(String.class, "nest_list", 0)
+        );
+        assertEquals(
+            mapper.getList(Object.class, "nest_list").get(2),
+            mapper.getVal(String.class, "nest_list", 2)
+        );
+        assertEquals(
+            mapper.getList(Object.class, "nest_list").get(mapper.getList(Object.class, "nest_list").size() - 2),
+            mapper.getVal(String.class, "nest_list", -2)
+        );
+        assertEquals(
+            mapper.getList(Object.class, "nest_list").get(mapper.getList(Object.class, "nest_list").size() - 1),
+            mapper.getVal(String.class, "nest_list", -1)
+        );
+        assertNull(mapper.optVal(String.class, "nest_list", -100));
+        assertNull(mapper.optString("nest_list", -100));
+        assertNull(mapper.optVal(String.class, "nest_list", 100));
+        assertNull(mapper.optString("nest_list", 100));
+
+        assertNotNull(mapper.getVal(String.class, "nest_list", 1));
+        assertNotNull(mapper.getString("nest_list", 1));
+        assertNotNull(mapper.optString("nest_list", 1));
+        assertEquals(mapper.getVal(String.class, "nest_list", 1), mapper.getString("nest_list", 1));
+        assertEquals(mapper.getString("nest_list", 1), mapper.optString("nest_list", 1));
+
+        assertNotNull(mapper.optString("nest_list", 0));
+        assertNotNull(mapper.optString("nest_list", -1));
+
+        String jsonStringModified = GSON.toJson(mapperList, MapperList.class);
+        assertNotEquals(JSON_STRING_ARRAY, jsonStringModified);
+    }
 
     public void testMapperListNested() throws Exception {
 
