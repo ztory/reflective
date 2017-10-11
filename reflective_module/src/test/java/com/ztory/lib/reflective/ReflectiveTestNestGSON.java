@@ -47,9 +47,13 @@ public class ReflectiveTestNestGSON extends TestCase {
           if (i2 == 0) {
             assertEquals("frittZ", tstNestTre.getLabel());
             assertEquals(Integer.valueOf(445), tstNestTre.getAttempts());
+            assertEquals("admin", tstNestTre.getRoles().get(0));
+            assertEquals("baller", tstNestTre.getRoles().get(1));
           } else if (i2 == 1) {
             assertEquals("frittzo", tstNestTre.getLabel());
             assertEquals(Integer.valueOf(46), tstNestTre.getAttempts());
+            assertEquals("admin", tstNestTre.getRoles().get(0));
+            assertEquals("baller", tstNestTre.getRoles().get(1));
           }
         }
       } else if (i == 1) {
@@ -69,9 +73,13 @@ public class ReflectiveTestNestGSON extends TestCase {
           if (i2 == 0) {
             assertEquals("frittZhöpp", tstNestTre.getLabel());
             assertEquals(Integer.valueOf(4459), tstNestTre.getAttempts());
+            assertEquals("admin", tstNestTre.getRoles().get(0));
+            assertEquals("baller", tstNestTre.getRoles().get(1));
           } else if (i2 == 1) {
             assertEquals("frittzop", tstNestTre.getLabel());
             assertEquals(Integer.valueOf(469), tstNestTre.getAttempts());
+            assertEquals("admin", tstNestTre.getRoles().get(0));
+            assertEquals("baller", tstNestTre.getRoles().get(1));
           }
         }
       }

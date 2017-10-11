@@ -2,6 +2,7 @@ package com.ztory.lib.reflective.tst;
 
 import com.ztory.lib.reflective.ReflectiveMapBacked;
 import com.ztory.lib.reflective.ReflectiveRequired;
+import com.ztory.lib.reflective.ReflectiveType;
 import java.util.List;
 
 /**
@@ -12,6 +13,6 @@ public interface TstNestTwo extends ReflectiveMapBacked {
   String getStatus();
   @ReflectiveRequired
   Integer getCounter();
-  @ReflectiveRequired
+  @ReflectiveRequired @ReflectiveType(TstNestTre.class)
   List<TstNestTre> getNestTreList();
 }

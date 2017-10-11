@@ -1,6 +1,5 @@
 package com.ztory.lib.reflective.tst;
 
-import android.util.Log;
 import com.ztory.lib.reflective.gson.map.Mapper;
 import java.util.List;
 import java.util.Map;
@@ -41,10 +40,6 @@ public class ImplTstNestTre implements TstNestTre {
 
   @Override
   public List<String> getRoles() {
-    System.out.println("---- -start- TEST ----");
-    System.out.println(backingMap.get("roles"));
-    System.out.println("---- - end - TEST ----");
-    Log.d("---- -startX- TEST ----", "---- -startX- TEST ----");
-    return null;//backingMap.getList(String.class, "roles");
+    return backingMap.getList(String.class, "roles");
   }
 }
