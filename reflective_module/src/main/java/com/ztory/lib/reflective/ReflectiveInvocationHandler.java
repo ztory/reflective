@@ -1,11 +1,12 @@
 package com.ztory.lib.reflective;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * Standard InvocationHandler implementation for Reflective functionality.
@@ -120,6 +121,23 @@ public class ReflectiveInvocationHandler implements InvocationHandler {
             }
         }
         else if (!methodReturnType.isAssignableFrom(returnValueType)) {
+
+            ReflectiveType reflectiveType = method.getAnnotation(ReflectiveType.class);
+            if (reflectiveType != null) {
+//                System.out.println("---- -START- Test ----");
+                Object reflectiveInstance = Reflective.getReflectiveInstance(
+                    reflectiveType.value(),
+                    (Map<String, Object>) returnValue,
+                    keyParser,
+                    null
+                );
+                returnValue = reflectiveInstance;
+//                System.out.println("Annotation: " + reflectiveType);
+//                System.out.println("reflectiveInstance: " + reflectiveInstance);
+//                System.out.println("---- - END - Test ----");
+                return returnValue;
+            }
+
             int returnValueWrapperIndex = Reflective.getPrimitiveWrapperIndex(returnValueType);
             if (Reflective.isPrimitiveIndexNumber(returnValueWrapperIndex)) {
                 switch (Reflective.getPrimitiveWrapperIndex(methodReturnType)) {
@@ -138,6 +156,33 @@ public class ReflectiveInvocationHandler implements InvocationHandler {
                 }
             }
             return null;
+        }
+        else if (List.class.isAssignableFrom(returnValueType)) {
+            if (returnValue == null) {
+                return null;
+            }
+            ReflectiveType reflectiveType = method.getAnnotation(ReflectiveType.class);
+            if (reflectiveType != null) {
+//                System.out.println("---- -START- List Test ----");
+                int listSize = ((List) returnValue).size();
+                if (listSize == 0) {
+                    return returnValue;
+                }
+                List<Object> returnList = new ArrayList<>(listSize);
+                for (Object iterObject : (List) returnValue) {
+                    returnList.add(
+                        Reflective.getReflectiveInstance(
+                            reflectiveType.value(),
+                            (Map<String, Object>) iterObject,
+                            keyParser,
+                            null
+                        )
+                    );
+                }
+                returnValue = returnList;
+//                System.out.println("---- - END - List Test ----");
+                return returnValue;
+            }
         }
 
         return returnValue;

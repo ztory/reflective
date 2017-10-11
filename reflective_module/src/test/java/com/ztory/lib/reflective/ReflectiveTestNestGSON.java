@@ -20,8 +20,49 @@ public class ReflectiveTestNestGSON extends TestCase {
 
   private static final String JSON_STRING_1 = "{\"title\":\"hej\",\"count\":3,\"nestOneList\":[{\"name\":\"tjo\",\"size\":12,\"nestTwo\":{\"status\":\"fritt\",\"counter\":44,\"nestTreList\":[{\"label\":\"frittZ\",\"attempts\":445,\"roles\":[\"admin\",\"baller\"]},{\"label\":\"frittzo\",\"attempts\":46,\"roles\":[\"admin\",\"baller\"]}]}},{\"name\":\"tjolahöpp\",\"size\":129,\"nestTwo\":{\"status\":\"fritthöpp\",\"counter\":449,\"nestTreList\":[{\"label\":\"frittZhöpp\",\"attempts\":4459,\"roles\":[\"admin\",\"baller\"]},{\"label\":\"frittzop\",\"attempts\":469,\"roles\":[\"admin\",\"baller\"]}]}}]}";
 
+  public void testReflectiveTypedReturn() throws Exception {
+    Mapper mapper = GSON.fromJson(JSON_STRING_1, Mapper.class);
+    TstBase tstBase = mapper.toReflective(TstBase.class);
+    validateTstBase(tstBase);
+  }
+
+  public void testReflectiveTypedListReturn() throws Exception {
+    TstBase tstBase = new ImplTstBase(GSON.fromJson(JSON_STRING_1, Mapper.class));
+    validateTstBase(tstBase);
+    Mapper tstNestOneMapper = new Mapper(tstBase.getNestOneList().get(0).get_reflectiveMapBacked());
+    assertNotNull(tstNestOneMapper);
+    assertEquals(3, tstNestOneMapper.size());
+
+    TstNestOne tstNestOne = tstNestOneMapper.toReflective(TstNestOne.class);
+    assertNotNull(tstNestOne);
+    assertNotNull(tstNestOne.getNestTwo());
+    assertNotNull(tstNestOne.getNestTwo().getNestTreList());
+    TstNestTre tstNestTre = tstNestOne.getNestTwo().getNestTreList().get(0);
+    assertNotNull(tstNestTre);
+    assertEquals("frittZ", tstNestTre.getLabel());
+    assertEquals(Integer.valueOf(445), tstNestTre.getAttempts());
+  }
+
+  public void testReflectiveTstNestOneTypedReturnMethod() throws Exception {
+    TstBase tstBase = new ImplTstBase(GSON.fromJson(JSON_STRING_1, Mapper.class));
+    validateTstBase(tstBase);
+    Mapper tstNestOneMapper = new Mapper(tstBase.getNestOneList().get(0).get_reflectiveMapBacked());
+    assertNotNull(tstNestOneMapper);
+    assertEquals(3, tstNestOneMapper.size());
+
+    TstNestOne tstNestOne = tstNestOneMapper.toReflective(TstNestOne.class);
+    assertNotNull(tstNestOne);
+    assertNotNull(tstNestOne.getNestTwo());
+    assertEquals("fritt", tstNestOne.getNestTwo().getStatus());
+    assertEquals(Integer.valueOf(44), tstNestOne.getNestTwo().getCounter());
+  }
+
   public void testImplTstBase() throws Exception {
     TstBase tstBase = new ImplTstBase(GSON.fromJson(JSON_STRING_1, Mapper.class));
+    validateTstBase(tstBase);
+  }
+
+  private void validateTstBase(TstBase tstBase) {
     assertNotNull(tstBase);
     assertEquals("hej", tstBase.getTitle());
     assertEquals(Integer.valueOf(3), tstBase.getCount());
