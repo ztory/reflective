@@ -37,6 +37,13 @@ public class ReflectiveTestNestGSON extends TestCase {
     assertTrue(threwException);
   }
 
+  public void testNestedRequiredFieldsThousand() throws Exception {
+    TstBase tstBase = GSON.fromJson(JSON_STRING_1, Mapper.class).toReflective(TstBase.class);
+    for (int i = 0; i < 1000; i++) {
+      Reflective.checkReflectiveRequired(TstBase.class, tstBase);
+    }
+  }
+
   public void testNestedRequiredFields() throws Exception {
     TstBase tstBase = GSON.fromJson(JSON_STRING_1, Mapper.class).toReflective(TstBase.class);
     validateTstBase(tstBase);
