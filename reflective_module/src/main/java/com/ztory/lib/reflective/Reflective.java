@@ -245,6 +245,28 @@ public class Reflective {
                     );
                 }
             }
+            else if ((aType = iterMethod.getAnnotation(ReflectiveType.class)) != null) {
+                // For non required return-types we still validate nested ReflectiveType instances
+                Object returnObject = null;
+                try {
+                    returnObject = iterMethod.invoke(object);
+                    if (returnObject != null) {
+                        if (returnObject instanceof List) {
+                            checkReflectiveRequired(aType.value(), (List) returnObject);
+                        } else {
+                            checkReflectiveRequiredObject(aType.value(), returnObject);
+                        }
+                    }
+                } catch (ReflectiveRequiredException e) {
+                    throw e;
+                } catch (Exception e) {
+                    throw new ReflectiveRequiredException(
+                        "ReflectiveRequired method " + iterMethod.getName()
+                            + " returned: " + returnObject,
+                        e
+                    );
+                }
+            }
         }
     }
 

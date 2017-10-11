@@ -23,6 +23,8 @@ public class ReflectiveTestNestGSON extends TestCase {
       JSON_STRING_1 = "{\"title\":\"hej\",\"count\":3,\"nestOneList\":[{\"name\":\"tjo\",\"size\":12,\"nestTwo\":{\"status\":\"fritt\",\"counter\":44,\"nestTreList\":[{\"label\":\"frittZ\",\"attempts\":445,\"roles\":[\"admin\",\"baller\"]},{\"label\":\"frittzo\",\"attempts\":46,\"roles\":[\"admin\",\"baller\"]}]}},{\"name\":\"tjolahöpp\",\"size\":129,\"nestTwo\":{\"status\":\"fritthöpp\",\"counter\":449,\"nestTreList\":[{\"label\":\"frittZhöpp\",\"attempts\":4459,\"roles\":[\"admin\",\"baller\"]},{\"label\":\"frittzop\",\"attempts\":469,\"roles\":[\"admin\",\"baller\"]}]}}]}",
       JSON_STRING_2 = "{\"name\":\"jonny\",\"phoneNumber\":\"+46777112233\",\"id\":123,\"faultyInnerList\":[{\"title\":\"Tjenna!X\",\"message\":\"Vad göres?X\",\"messageCount\":31,\"faultyInnerInner\":{\"label\":\"some_cool_labelX\"}},{\"title\":\"Tjenna!XX\",\"message\":\"Vad göres?XX\",\"messageCount\":32,\"faultyInnerInner\":{\"label\":\"some_cool_labelXX\"}},{\"title\":\"Tjenna!XXX\",\"message\":\"Vad göres?XXX\",\"messageCount\":33,\"faultyInnerInner\":{\"label\":\"some_cool_labelXXX\"}},{\"title\":\"Tjenna!XXXX\",\"message\":\"Vad göres?XXXX\",\"messageCount\":34,\"faultyInnerInner\":{\"label\":\"some_cool_labelXXXX\"}}]}";
 
+  //TODO TEST PERFORMANCE OF NEW REQUIRED FUNCTIOANLITY !!!!
+
   public void testFaultyBaseInterface() throws Exception {
     FaultyBase faulty = GSON.fromJson(JSON_STRING_2, Mapper.class).toReflective(FaultyBase.class);
     boolean threwException = false;

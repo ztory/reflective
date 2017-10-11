@@ -13,6 +13,6 @@ public interface FaultyInner {
   String getMessage();
   @ReflectiveRequired
   Integer getMessageCount();
-  @ReflectiveRequired @ReflectiveType(FaultyInnerInner.class)
+  @ReflectiveType(FaultyInnerInner.class)
   FaultyInnerInner getFaultyInnerInner();
 }
