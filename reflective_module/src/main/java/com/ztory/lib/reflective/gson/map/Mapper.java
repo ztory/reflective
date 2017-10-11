@@ -1,5 +1,8 @@
 package com.ztory.lib.reflective.gson.map;
 
+import com.ztory.lib.reflective.Reflective;
+import com.ztory.lib.reflective.ReflectiveKeyParser;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -14,6 +17,58 @@ import java.util.Map;
  * Created by jonruna on 26/09/16.
  */
 public class Mapper extends LinkedHashMap<String, Object> {
+
+  protected ReflectiveKeyParser reflectiveKeyParser = Reflective.CAMELCASE;
+
+  public Mapper() {
+    super();
+  }
+
+  public Mapper(Map<? extends String, ? extends Object> map) {
+    super(map);
+  }
+
+  public <T> List<T> getReflectiveList(Class<T> clazz, Object... keys) {
+    Object object = getVal(Object.class, keys);
+    if (object instanceof List) {
+      List<Map<String, Object>> objectList = (List<Map<String, Object>>) object;
+      List<T> returnList = new ArrayList<>(objectList.size());
+      for (Map<String, Object> iterMap : objectList) {
+        returnList.add(
+            Reflective.getReflectiveInstance(
+                clazz,
+                iterMap,
+                reflectiveKeyParser,
+                null
+            )
+        );
+      }
+      return returnList;
+    }
+    return null;
+  }
+
+  public <T> T getReflective(Class<T> clazz, Object... keys) {
+    Object object = getVal(Object.class, keys);
+    if (object instanceof Map) {
+      return Reflective.getReflectiveInstance(
+          clazz,
+          (Map<String, Object>) object,
+          reflectiveKeyParser,
+          null
+      );
+    }
+    return null;
+  }
+
+  public <T> T toReflective(Class<T> clazz) {
+    return Reflective.getReflectiveInstance(
+        clazz,
+        this,
+        reflectiveKeyParser,
+        null
+    );
+  }
 
   public Number optNumber(Object... keys) {
     return optVal(Number.class, keys);

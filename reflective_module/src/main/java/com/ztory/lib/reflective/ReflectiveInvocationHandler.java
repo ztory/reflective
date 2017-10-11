@@ -179,6 +179,8 @@ public class ReflectiveInvocationHandler implements InvocationHandler {
                 }
             } else if (methodName.equals("clone")) {
                 throw new CloneNotSupportedException();
+            } else if (methodName.equals("get_reflectiveMapBacked")) {
+                return membersMap;
             }
 
             if (hasCustomKeyMap) {
