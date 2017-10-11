@@ -171,6 +171,13 @@ public class Reflective {
         }
     }
 
+    private static <T> void checkReflectiveRequiredObject(
+        Class<T> clazz,
+        Object object
+    ) throws ReflectiveRequiredException {
+        checkReflectiveRequired(clazz, (T) object);
+    }
+
     /**
      * NOTE THAT ANNOTATIONS ARE NOT INHERITED BY SUBCLASSES!
      * Easy fix is to use base-interface/class for validation and subclass for logic.
@@ -188,6 +195,7 @@ public class Reflective {
             T object
     ) throws ReflectiveRequiredException {
         ReflectiveRequired aRequired;
+        ReflectiveType aType;
         for (Method iterMethod : clazz.getMethods()) {
             if ((aRequired = iterMethod.getAnnotation(ReflectiveRequired.class)) != null) {
 
@@ -219,6 +227,13 @@ public class Reflective {
                                 "ReflectiveRequired method " + iterMethod.getName() + " returned "
                                 + returnObject + ". Minimum value is: " + aRequired.minimumNumber()
                         );
+                    }
+                    else if ((aType = iterMethod.getAnnotation(ReflectiveType.class)) != null) {
+                        if (returnObject instanceof List) {
+                            checkReflectiveRequired(aType.value(), (List) returnObject);
+                        } else {
+                            checkReflectiveRequiredObject(aType.value(), returnObject);
+                        }
                     }
                 } catch (ReflectiveRequiredException e) {
                     throw e;

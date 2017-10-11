@@ -19,6 +19,7 @@ import java.util.Map;
 public class Mapper extends LinkedHashMap<String, Object> {
 
   protected ReflectiveKeyParser reflectiveKeyParser = Reflective.CAMELCASE;
+  protected Map<String, String> reflectiveCustomKeyMap = null;
 
   public Mapper() {
     super();
@@ -39,7 +40,7 @@ public class Mapper extends LinkedHashMap<String, Object> {
                 clazz,
                 iterMap,
                 reflectiveKeyParser,
-                null
+                reflectiveCustomKeyMap
             )
         );
       }
@@ -55,7 +56,7 @@ public class Mapper extends LinkedHashMap<String, Object> {
           clazz,
           (Map<String, Object>) object,
           reflectiveKeyParser,
-          null
+          reflectiveCustomKeyMap
       );
     }
     return null;
@@ -66,7 +67,7 @@ public class Mapper extends LinkedHashMap<String, Object> {
         clazz,
         this,
         reflectiveKeyParser,
-        null
+        reflectiveCustomKeyMap
     );
   }
 
