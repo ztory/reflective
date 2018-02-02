@@ -36,6 +36,23 @@ public class ReflectiveTestGSON extends TestCase {
         super.tearDown();
     }
 
+    public void testMapperBizJob() throws Exception {
+        Mapper mapper = new Mapper();
+        mapper.put("id", "dhaidsaij433553");
+        mapper.put("title", "hej123");
+        BizJob bizJob = mapper.toReflective(BizJob.class);
+        Reflective.checkReflectiveRequired(BizJob.class, bizJob);
+        assertEquals(mapper.get("id"), bizJob.getId());
+        assertEquals(mapper.get("title"), bizJob.getTitle());
+
+        assertEquals(mapper.toReflective(BizJob.class), mapper.toReflective(BizJob.class));
+
+        Mapper mapper2 = new Mapper();
+        mapper2.put("title", "hej123");
+        mapper2.put("id", "dhaidsaij433553");
+        assertEquals(mapper.toReflective(BizJob.class), mapper2.toReflective(BizJob.class));
+    }
+
 //    public void testMapperListNested1000000() throws Exception {
 //        for (int i = 0; i < 1000000; i++) { testMapperListNested(); }
 //    }

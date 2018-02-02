@@ -215,7 +215,13 @@ public class ReflectiveInvocationHandler implements InvocationHandler {
                     return membersMap.hashCode();
                 }
             } else if (methodName.equals("equals")) {
-                return proxy == args[0];
+                if (proxy instanceof ReflectiveMapBacked && args[0] instanceof ReflectiveMapBacked) {
+                    return ((ReflectiveMapBacked) proxy).get_reflectiveMapBacked().equals(
+                        ((ReflectiveMapBacked) args[0]).get_reflectiveMapBacked()
+                    );
+                } else {
+                    return proxy == args[0];
+                }
             } else if (methodName.equals("toString")) {
                 if (jsonMode) {
                     return membersJSON.toString();
