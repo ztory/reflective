@@ -43,8 +43,56 @@ allprojects {
 #### Step 2
 In your module `build.gradle` add this:
 ```
-compile 'com.ztory.lib.reflective:reflective_module:1.5.0'
+compile 'com.ztory.lib.reflective:reflective_module:1.5.2'
 ```
+
+#### Step 3
+If you want to use Mapper and MapperList classes in a simple way with [GSON](https://github.com/google/gson) you should initialize the following in your `Application` class:
+```
+// Used to interpret method-names to actual keys in underlying Map.
+UtilMapper.initDefaultKeyParser(Reflective.CAMELCASE);
+
+// Defines how Mapper instances should be serialized to a String
+UtilMapper.initDefaultMapperSerializer(
+    new MapperSerializer() {
+        @Override
+        public String getMapperString(Mapper mapper) {
+            return GSON.toJson(mapper, Mapper.class);
+        }
+    }
+);
+
+// Defines how Mapper instances should be deserialized from a String
+UtilMapper.initDefaultMapperDeserializer(
+    new MapperDeserializer() {
+        @Override
+        public Mapper getMapper(String mapperString) {
+            return GSON.fromJson(mapperString, Mapper.class);
+        }
+    }
+);
+
+// Defines how MapperList instances should be serialized to a String
+UtilMapper.initDefaultMapperListSerializer(
+    new MapperListSerializer() {
+        @Override
+        public String getMapperListString(MapperList mapper) {
+            return GSON.toJson(mapper, MapperList.class);
+        }
+    }
+);
+
+// Defines how MapperList instances should be deserialized from a String
+UtilMapper.initDefaultMapperListDeserializer(
+    new MapperListDeserializer() {
+        @Override
+        public MapperList getMapperList(String mapperString) {
+            return GSON.fromJson(mapperString, MapperList.class);
+        }
+    }
+);
+```
+NOTE: You can extend `ReflectiveMapBacked` in your interfaces that you instantiate with Reflective to easily move between POJO<->Reflective<->String types.
 
 ## What else?
 
