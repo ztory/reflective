@@ -3,37 +3,178 @@ package com.ztory.lib.reflective;
 import static org.junit.Assert.assertNotEquals;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 import com.google.gson.reflect.TypeToken;
 import com.ztory.lib.reflective.gson.map.Mapper;
-
+import com.ztory.lib.reflective.gson.map.MapperDeserializer;
 import com.ztory.lib.reflective.gson.map.MapperList;
-import java.util.HashMap;
-import junit.framework.TestCase;
-
+import com.ztory.lib.reflective.gson.map.MapperListDeserializer;
+import com.ztory.lib.reflective.gson.map.MapperListSerializer;
+import com.ztory.lib.reflective.gson.map.MapperSerializer;
+import com.ztory.lib.reflective.gson.map.UtilMapper;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import junit.framework.TestCase;
 
 /**
  * Created by jonruna on 26/09/16.
  */
 public class ReflectiveTestGSON extends TestCase {
 
-    private static final Gson GSON = new Gson();
+    private static Gson GSON;
 
-    private static final String JSON_STRING_1 = "{\"key0\": true,\"key1\": \"jonny\",\"key2\": \"anny\",\"obj1\": {\"obj1_one\": {\"mega_nest_1\": {\"mega_map\": {\"one\": 1, \"two\": 2}, \"mega_array\": [4, 8, 12], \"mega_key1\": \"balleriffico\"}, \"nesto1\": \"tjolahopp\"}, \"obj_key1\": \"ork\",\"obj_key2\": 48, \"obj_array\": [\"one\", 2, 3], \"obj_array_two\": [4, 5, 6]}}";
+    private static final String JSON_STRING_1 = "{\"key0\":true,\"key1\":\"jonny\",\"key2\":\"anny\",\"obj1\":{\"obj1_one\":{\"mega_nest_1\":{\"mega_map\":{\"one\":1.99765,\"two\":2},\"mega_array\":[4,8.425891,12],\"mega_key1\":\"balleriffico\"},\"nesto1\":\"tjolahopp\"},\"obj_key1\":\"ork\",\"obj_key2\":48,\"obj_array\":[\"one\",2,3],\"obj_array_two\":[4,5,6]}}";
     private static final String JSON_STRING_ARRAY = "[{\"_id\":\"dsahudasi4234444\",\"title\":\"hej1\",\"description\":\"1tjenare där!\",\"nest_list\":[{\"nest_string\":\"tjo\",\"nest_number\":1244.3432,\"nestX\":{\"nestX_list\":[{\"deepz\":\"is it not?!\"},{\"deepz2\":\"is it not mate?!\"}]}}]},{\"_id\":\"dsahudasi4235555\",\"title\":\"hej2\",\"description\":\"2tjenare där!\"},{\"_id\":\"dsahudasi42323299\",\"title\":\"hej3\",\"description\":\"3tjenare där!\"},{\"_id\":\"dsahudasi423666\",\"title\":\"hej4\",\"description\":\"4tjenare där!\"}]";
 
-    private static final MapperList sMapperList = GSON.fromJson(JSON_STRING_ARRAY, MapperList.class);
+    private static MapperList sMapperList;
+
+    private void initGSONandUtilMapper() {
+        if (GSON == null) {
+            GSON = new GsonBuilder().
+                registerTypeAdapter(Double.class,  new JsonSerializer<Double>() {
+                    @Override
+                    public JsonElement serialize(Double src, Type typeOfSrc, JsonSerializationContext context) {
+                        if (src == src.longValue()) {
+                            return new JsonPrimitive(src.longValue());
+                        }
+                        return new JsonPrimitive(src);
+                    }
+                }).create();
+
+            sMapperList = GSON.fromJson(JSON_STRING_ARRAY, MapperList.class);
+        }
+
+        if (UtilMapper.getDefaultKeyParser() == null) {
+            UtilMapper.initDefaultKeyParser(Reflective.CAMELCASE);
+        }
+
+        if (UtilMapper.getDefaultMapperSerializer() == null) {
+            UtilMapper.initDefaultMapperSerializer(
+                new MapperSerializer() {
+                    @Override
+                    public String getMapperString(Mapper mapper) {
+                        return GSON.toJson(mapper, Mapper.class);
+                    }
+                }
+            );
+        }
+
+        if (UtilMapper.getDefaultMapperDeserializer() == null) {
+            UtilMapper.initDefaultMapperDeserializer(
+                new MapperDeserializer() {
+                    @Override
+                    public Mapper getMapper(String mapperString) {
+                        return GSON.fromJson(mapperString, Mapper.class);
+                    }
+                }
+            );
+        }
+
+        if (UtilMapper.getDefaultMapperListSerializer() == null) {
+            UtilMapper.initDefaultMapperListSerializer(
+                new MapperListSerializer() {
+                    @Override
+                    public String getMapperListString(MapperList mapper) {
+                        return GSON.toJson(mapper, MapperList.class);
+                    }
+                }
+            );
+        }
+
+        if (UtilMapper.getDefaultMapperListDeserializer() == null) {
+            UtilMapper.initDefaultMapperListDeserializer(
+                new MapperListDeserializer() {
+                    @Override
+                    public MapperList getMapperList(String mapperString) {
+                        return GSON.fromJson(mapperString, MapperList.class);
+                    }
+                }
+            );
+        }
+    }
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
+        initGSONandUtilMapper();
     }
 
     @Override
     protected void tearDown() throws Exception {
         super.tearDown();
+    }
+
+    public void testMapperListFromMapBacked() throws Exception {
+        Mapper mapper1 = new Mapper();
+        mapper1.put("id", "dhaidsaij433553");
+        mapper1.put("title", "hej123");
+        BizJob bizJob1 = mapper1.toReflective(BizJob.class);
+        Reflective.checkReflectiveRequired(BizJob.class, bizJob1);
+
+        Mapper mapper2 = new Mapper();
+        mapper2.put("id", "dhaidsaij433553");
+        mapper2.put("title", "hej123");
+        BizJob bizJob2 = mapper1.toReflective(BizJob.class);
+        Reflective.checkReflectiveRequired(BizJob.class, bizJob2);
+
+        ArrayList<BizJob> jobList = new ArrayList<>();
+        jobList.add(bizJob1);
+        jobList.add(bizJob2);
+
+        MapperList mapperList = new MapperList();
+        mapperList.add(mapper1);
+        mapperList.add(mapper2);
+
+        assertEquals(jobList, mapperList.toReflective(BizJob.class));
+
+        assertEquals(mapperList, MapperList.fromReflective(jobList));
+
+        assertEquals(mapperList.toString(), MapperList.fromReflective(jobList).toString());
+    }
+
+    public void testMapperFromMapBacked() throws Exception {
+        Mapper mapper = new Mapper();
+        mapper.put("id", "dhaidsaij433553");
+        mapper.put("title", "hej123");
+        BizJob bizJob = mapper.toReflective(BizJob.class);
+        Reflective.checkReflectiveRequired(BizJob.class, bizJob);
+
+        assertEquals(bizJob.get_reflectiveMapBacked(), mapper);
+
+        assertEquals(bizJob, mapper.toReflective(BizJob.class));
+
+        assertEquals(Mapper.fromReflective(bizJob), mapper);
+
+        assertEquals(Mapper.fromReflective(bizJob).toString(), mapper.toString());
+    }
+
+    public void testMapperListDeserializeSerialize() throws Exception {
+        MapperList mapperList1 = MapperList.fromString(JSON_STRING_ARRAY);
+        assertEquals(4, mapperList1.size());
+        assertEquals(JSON_STRING_ARRAY, mapperList1.toString());
+    }
+
+    public void testMapperDeserializeSerialize() throws Exception {
+        Mapper mapper1 = Mapper.fromString(JSON_STRING_1);
+        assertEquals("jonny", mapper1.get("key1"));
+        assertEquals(JSON_STRING_1, mapper1.toString());
+
+        assertEquals(
+            8.425891,
+            mapper1.getNumber("obj1", "obj1_one", "mega_nest_1", "mega_array", 1).doubleValue()
+        );
+
+        assertEquals(
+            2,
+            mapper1.getNumber("obj1", "obj1_one", "mega_nest_1", "mega_map", "two").intValue()
+        );
     }
 
     public void testMapperBizJob() throws Exception {
@@ -194,26 +335,26 @@ public class ReflectiveTestGSON extends TestCase {
         String oneStringValue = root.optVal(String.class, "obj1", "obj1_one", "mega_nest_1", "mega_map", "one");
         assertNull(oneStringValue);
         Number oneValue = root.getVal(Number.class, "obj1", "obj1_one", "mega_nest_1", "mega_map", "one");
-        assertEquals(1.0, oneValue);
+        assertEquals(1.99765, oneValue);
     }
 
     public void testMapNumberMapGSON() throws Exception {
         Gson gson = new Gson();
         Mapper root = gson.fromJson(JSON_STRING_1, Mapper.class);
         Map<String, Number> numberMap = root.getMap(Number.class, "obj1", "obj1_one", "mega_nest_1", "mega_map");
-        assertEquals(1.0, numberMap.get("one"));
+        assertEquals(1.99765, numberMap.get("one"));
         assertEquals(2.0, numberMap.get("two"));
     }
 
     public void testMapNestedListGSON() throws Exception {
         Mapper root = new Gson().fromJson(JSON_STRING_1, Mapper.class);
         assertEquals(4.0, root.getList(Object.class, "obj1", "obj1_one", "mega_nest_1", "mega_array").get(0));
-        assertEquals(8.0, root.getList(Number.class, "obj1", "obj1_one", "mega_nest_1", "mega_array").get(1));
+        assertEquals(8.425891, root.getList(Number.class, "obj1", "obj1_one", "mega_nest_1", "mega_array").get(1));
         assertEquals(12.0, root.getList(Number.class, "obj1", "obj1_one", "mega_nest_1", "mega_array").get(2));
 
         List<Number> numberList = root.getList(Number.class, "obj1", "obj1_one", "mega_nest_1", "mega_array");
         assertEquals(4.0, numberList.get(0));
-        assertEquals(8.0, numberList.get(1));
+        assertEquals(8.425891, numberList.get(1));
         assertEquals(12.0, numberList.get(2));
 
         List<String> stringList = root.getList(String.class, "obj1", "obj1_one", "mega_nest_1", "mega_array");

@@ -2,6 +2,7 @@ package com.ztory.lib.reflective.gson.map;
 
 import com.ztory.lib.reflective.Reflective;
 import com.ztory.lib.reflective.ReflectiveKeyParser;
+import com.ztory.lib.reflective.ReflectiveMapBacked;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -18,7 +19,20 @@ import java.util.Map;
  */
 public class Mapper extends LinkedHashMap<String, Object> {
 
-  protected ReflectiveKeyParser reflectiveKeyParser = Reflective.CAMELCASE;
+  public static Mapper fromString(String mapperString) {
+    return UtilMapper.getDefaultMapperDeserializer().getMapper(mapperString);
+  }
+
+  public static Mapper fromReflective(ReflectiveMapBacked mapBacked) {
+    Map<String, Object> map = mapBacked.get_reflectiveMapBacked();
+    if (map instanceof Mapper) {
+      return (Mapper) map;
+    } else {
+      return new Mapper(map);
+    }
+  }
+
+  protected ReflectiveKeyParser reflectiveKeyParser = UtilMapper.getDefaultKeyParser();
   protected Map<String, String> reflectiveCustomKeyMap = null;
 
   public Mapper() {
@@ -27,6 +41,28 @@ public class Mapper extends LinkedHashMap<String, Object> {
 
   public Mapper(Map<? extends String, ? extends Object> map) {
     super(map);
+  }
+
+  public void setKeyParser(ReflectiveKeyParser keyParser) {
+    reflectiveKeyParser = keyParser;
+  }
+
+  public void setCustomKeyMap(Map<String, String> customKeyMap) {
+    reflectiveCustomKeyMap = customKeyMap;
+  }
+
+  @Override
+  public String toString() {
+    return UtilMapper.getDefaultMapperSerializer().getMapperString(this);
+  }
+
+  public <T> T toReflective(Class<T> clazz) {
+    return Reflective.getReflectiveInstance(
+        clazz,
+        this,
+        reflectiveKeyParser,
+        reflectiveCustomKeyMap
+    );
   }
 
   public <T> List<T> getReflectiveList(Class<T> clazz, Object... keys) {
@@ -60,15 +96,6 @@ public class Mapper extends LinkedHashMap<String, Object> {
       );
     }
     return null;
-  }
-
-  public <T> T toReflective(Class<T> clazz) {
-    return Reflective.getReflectiveInstance(
-        clazz,
-        this,
-        reflectiveKeyParser,
-        reflectiveCustomKeyMap
-    );
   }
 
   public Number optNumber(Object... keys) {
