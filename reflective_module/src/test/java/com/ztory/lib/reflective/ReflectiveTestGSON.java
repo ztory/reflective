@@ -111,6 +111,61 @@ public class ReflectiveTestGSON extends TestCase {
         super.tearDown();
     }
 
+    public void testMapperObjectAndArrayFunctions() throws Exception {
+
+        /*
+{
+	"key0": true,
+	"key1": "jonny",
+	"key2": "anny",
+	"obj1": {
+		"obj1_one": {
+			"mega_nest_1": {
+				"mega_map": {
+					"one": 1.99765,
+					"two": 2
+				},
+				"mega_array": [4, 8.425891, 12],
+				"mega_key1": "balleriffico"
+			},
+			"nesto1": "tjolahopp"
+		},
+		"obj_key1": "ork",
+		"obj_key2": 48,
+		"obj_array": ["one", 2, 3],
+		"obj_array_two": [4, 5, 6]
+	}
+}
+         */
+
+        Mapper mapperRaw = Mapper.obj(
+            "key0", true,
+            "key1", "jonny",
+            "key2", "anny",
+            "obj1", Mapper.obj(
+                "obj1_one", Mapper.obj(
+                    "mega_nest_1", Mapper.obj(
+                        "mega_map", Mapper.obj(
+                            "one", 1.99765,
+                            "two", 2
+                        ),
+                        "mega_array", Mapper.array(4, 8.425891, 12),
+                        "mega_key1", "balleriffico"
+                    ),
+                    "nesto1", "tjolahopp"
+                ),
+                "obj_key1", "ork",
+                "obj_key2", 48,
+                "obj_array", Mapper.array("one", 2, 3),
+                "obj_array_two", Mapper.array(4, 5, 6)
+            )
+        );
+        Mapper mapperJson = Mapper.fromString(JSON_STRING_1);
+        assertEquals(JSON_STRING_1, mapperRaw.toString());
+        assertEquals(JSON_STRING_1, mapperJson.toString());
+        assertEquals(mapperRaw.toString(), mapperJson.toString());
+    }
+
     public void testMapperListFromMapBacked() throws Exception {
         Mapper mapper1 = new Mapper();
         mapper1.put("id", "dhaidsaij433553");

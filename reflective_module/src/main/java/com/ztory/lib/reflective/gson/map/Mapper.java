@@ -4,6 +4,7 @@ import com.ztory.lib.reflective.Reflective;
 import com.ztory.lib.reflective.ReflectiveKeyParser;
 import com.ztory.lib.reflective.ReflectiveMapBacked;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -18,6 +19,19 @@ import java.util.Map;
  * Created by jonruna on 26/09/16.
  */
 public class Mapper extends LinkedHashMap<String, Object> {
+
+  public static Mapper obj(Object... keyVals) {
+    Mapper mapper = new Mapper();
+    for (int i = 0; i < keyVals.length; i += 2) {
+      mapper.put((String) keyVals[i], keyVals[i + 1]);
+    }
+    return mapper;
+  }
+
+  @SafeVarargs
+  public static <T> List<T> array(T... items) {
+    return Arrays.asList(items);
+  }
 
   public static Mapper fromString(String mapperString) {
     return UtilMapper.getDefaultMapperDeserializer().getMapper(mapperString);
