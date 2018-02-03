@@ -3,19 +3,9 @@ package com.ztory.lib.reflective;
 import static org.junit.Assert.assertNotEquals;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonPrimitive;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
 import com.google.gson.reflect.TypeToken;
 import com.ztory.lib.reflective.gson.map.Mapper;
-import com.ztory.lib.reflective.gson.map.MapperDeserializer;
 import com.ztory.lib.reflective.gson.map.MapperList;
-import com.ztory.lib.reflective.gson.map.MapperListDeserializer;
-import com.ztory.lib.reflective.gson.map.MapperListSerializer;
-import com.ztory.lib.reflective.gson.map.MapperSerializer;
-import com.ztory.lib.reflective.gson.map.UtilMapper;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,82 +18,16 @@ import junit.framework.TestCase;
  */
 public class ReflectiveTestGSON extends TestCase {
 
-    private static Gson GSON;
+    private static final Gson GSON = TestGsonAndAppInitializer.init();
 
     private static final String JSON_STRING_1 = "{\"key0\":true,\"key1\":\"jonny\",\"key2\":\"anny\",\"obj1\":{\"obj1_one\":{\"mega_nest_1\":{\"mega_map\":{\"one\":1.99765,\"two\":2},\"mega_array\":[4,8.425891,12],\"mega_key1\":\"balleriffico\"},\"nesto1\":\"tjolahopp\"},\"obj_key1\":\"ork\",\"obj_key2\":48,\"obj_array\":[\"one\",2,3],\"obj_array_two\":[4,5,6]}}";
     private static final String JSON_STRING_ARRAY = "[{\"_id\":\"dsahudasi4234444\",\"title\":\"hej1\",\"description\":\"1tjenare där!\",\"nest_list\":[{\"nest_string\":\"tjo\",\"nest_number\":1244.3432,\"nestX\":{\"nestX_list\":[{\"deepz\":\"is it not?!\"},{\"deepz2\":\"is it not mate?!\"}]}}]},{\"_id\":\"dsahudasi4235555\",\"title\":\"hej2\",\"description\":\"2tjenare där!\"},{\"_id\":\"dsahudasi42323299\",\"title\":\"hej3\",\"description\":\"3tjenare där!\"},{\"_id\":\"dsahudasi423666\",\"title\":\"hej4\",\"description\":\"4tjenare där!\"}]";
 
-    private static MapperList sMapperList;
-
-    private void initGSONandUtilMapper() {
-        if (GSON == null) {
-            GSON = new GsonBuilder().
-                registerTypeAdapter(Double.class,  new JsonSerializer<Double>() {
-                    @Override
-                    public JsonElement serialize(Double src, Type typeOfSrc, JsonSerializationContext context) {
-                        if (src == src.longValue()) {
-                            return new JsonPrimitive(src.longValue());
-                        }
-                        return new JsonPrimitive(src);
-                    }
-                }).create();
-
-            sMapperList = GSON.fromJson(JSON_STRING_ARRAY, MapperList.class);
-        }
-
-        if (UtilMapper.getDefaultKeyParser() == null) {
-            UtilMapper.initDefaultKeyParser(Reflective.CAMELCASE);
-        }
-
-        if (UtilMapper.getDefaultMapperSerializer() == null) {
-            UtilMapper.initDefaultMapperSerializer(
-                new MapperSerializer() {
-                    @Override
-                    public String getMapperString(Mapper mapper) {
-                        return GSON.toJson(mapper, Mapper.class);
-                    }
-                }
-            );
-        }
-
-        if (UtilMapper.getDefaultMapperDeserializer() == null) {
-            UtilMapper.initDefaultMapperDeserializer(
-                new MapperDeserializer() {
-                    @Override
-                    public Mapper getMapper(String mapperString) {
-                        return GSON.fromJson(mapperString, Mapper.class);
-                    }
-                }
-            );
-        }
-
-        if (UtilMapper.getDefaultMapperListSerializer() == null) {
-            UtilMapper.initDefaultMapperListSerializer(
-                new MapperListSerializer() {
-                    @Override
-                    public String getMapperListString(MapperList mapper) {
-                        return GSON.toJson(mapper, MapperList.class);
-                    }
-                }
-            );
-        }
-
-        if (UtilMapper.getDefaultMapperListDeserializer() == null) {
-            UtilMapper.initDefaultMapperListDeserializer(
-                new MapperListDeserializer() {
-                    @Override
-                    public MapperList getMapperList(String mapperString) {
-                        return GSON.fromJson(mapperString, MapperList.class);
-                    }
-                }
-            );
-        }
-    }
+    private static final MapperList sMapperList = GSON.fromJson(JSON_STRING_ARRAY, MapperList.class);
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        initGSONandUtilMapper();
     }
 
     @Override

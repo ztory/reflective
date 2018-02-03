@@ -1,6 +1,8 @@
 package com.ztory.lib.reflective.gson.map;
 
+import com.ztory.lib.reflective.Reflective;
 import com.ztory.lib.reflective.ReflectiveMapBacked;
+import com.ztory.lib.reflective.ReflectiveRequiredException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +40,12 @@ public class MapperList extends ArrayList<Mapper> {
     for (Mapper iterMapper : this) {
       returnList.add(iterMapper.toReflective(clazz));
     }
+    return returnList;
+  }
+
+  public <T> List<T> toReflectiveValidated(Class<T> clazz) throws ReflectiveRequiredException {
+    List<T> returnList = toReflective(clazz);
+    Reflective.checkReflectiveRequired(clazz, returnList);
     return returnList;
   }
 

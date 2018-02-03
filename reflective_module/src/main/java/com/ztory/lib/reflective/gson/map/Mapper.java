@@ -3,6 +3,7 @@ package com.ztory.lib.reflective.gson.map;
 import com.ztory.lib.reflective.Reflective;
 import com.ztory.lib.reflective.ReflectiveKeyParser;
 import com.ztory.lib.reflective.ReflectiveMapBacked;
+import com.ztory.lib.reflective.ReflectiveRequiredException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -77,6 +78,12 @@ public class Mapper extends LinkedHashMap<String, Object> {
         reflectiveKeyParser,
         reflectiveCustomKeyMap
     );
+  }
+
+  public <T> T toReflectiveValidated(Class<T> clazz) throws ReflectiveRequiredException {
+    T reflectiveInstance = toReflective(clazz);
+    Reflective.checkReflectiveRequired(clazz, reflectiveInstance);
+    return reflectiveInstance;
   }
 
   public <T> List<T> getReflectiveList(Class<T> clazz, Object... keys) {
