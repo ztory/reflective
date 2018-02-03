@@ -3,7 +3,7 @@
   <groupId>com.ztory.lib.reflective</groupId>
   <artifactId>reflective_module</artifactId>
   <versioning>
-    <release>1.5.1</release>
+    <release>1.5.2</release>
     <versions>
       <version>1.0.4</version>
       <version>1.1.0</version>
@@ -12,7 +12,8 @@
       <version>1.4.1</version>
       <version>1.5.0</version>
       <version>1.5.1</version>
+      <version>1.5.2</version>
     </versions>
-    <lastUpdated>20180202095624</lastUpdated>
+    <lastUpdated>20180203130802</lastUpdated>
   </versioning>
 </metadata>
