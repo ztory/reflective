@@ -36,6 +36,7 @@ mapper == sameMapperInstance;// true
 // Provided you have setup GSON as described in Step 3, we can get a JSON-String from toString()
 String jsonString = mapper.toString();// {"id":"abc123","email":"jonny@example.com", ...
 
+// And finally when we have a JSON-String we can instantiate a Mapper from it
 Mapper mapperFromJsonString = Mapper.fromString(jsonString);
 ```
 
