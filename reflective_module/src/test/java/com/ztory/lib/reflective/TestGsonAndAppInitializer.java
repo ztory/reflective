@@ -25,6 +25,7 @@ public class TestGsonAndAppInitializer {
   public static Gson init() {
     if (GSON == null) {
       GsonBuilder gsonBuilder = new GsonBuilder();
+      // Register Type adapter for Double if you want values like '3.0' to be serialized to '3'
       gsonBuilder.registerTypeAdapter(Double.class,  new JsonSerializer<Double>() {
         @Override
         public JsonElement serialize(Double src, Type typeOfSrc, JsonSerializationContext context) {

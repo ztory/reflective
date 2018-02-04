@@ -82,6 +82,19 @@ compile 'com.ztory.lib.reflective:reflective_module:1.6.0'
 #### Step 3
 If you want to use Mapper and MapperList classes in a simple way with [GSON](https://github.com/google/gson) you should initialize the following in your `Application` class:
 ```
+GsonBuilder gsonBuilder = new GsonBuilder();
+// Register Type adapter for Double if you want values like '3.0' to be serialized to '3'
+gsonBuilder.registerTypeAdapter(Double.class,  new JsonSerializer<Double>() {
+    @Override
+    public JsonElement serialize(Double src, Type typeOfSrc, JsonSerializationContext context) {
+        if (src == src.longValue()) {
+            return new JsonPrimitive(src.longValue());
+        }
+        return new JsonPrimitive(src);
+    }
+});
+GSON = gsonBuilder.create();
+
 // Used to interpret method-names to actual keys in underlying Map.
 UtilMapper.initDefaultKeyParser(Reflective.CAMELCASE);
 
