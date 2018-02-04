@@ -1,26 +1,59 @@
 # Reflective
 
-Reflective is a collection of classes and functions that simplify working with a subset of the Java Reflection API.
+Reflective is a collection of classes and functions that simplify working with a subset of the Java Reflection API to instantiate interfaces using Map instances, without the need for implementing classes of the interface.
 
 ## Code example
-Instantiate a reflective interface instance from a JSONObject, all the methods will get and put values in the JSONObject used to create the interface instance:
+
+Given the following interface:
 ```java
-String theName = "jonny";
-JSONObject jsonObject = new JSONObject();
-jsonObject.put("name", theName);
-ProfileInterface profile = Reflective.getReflectiveInstance(
-        ProfileInterface.class,
-        jsonObject,
-        Reflective.LOWERCASE_UNDERSCORE,
-        null
-);
-Log.d(
-        "Reflective",
-        "Reflective interface name: " + profile.getName()
-        + " | theName: " + theName
-        + " | theName equals the interface name: " + theName.equals(profile.getName())
-);
+public interface UserProfile extends ReflectiveMapBacked {
+  @ReflectiveRequired
+  String getId();
+  @ReflectiveRequired
+  String getEmail();
+  ...
+}
 ```
+
+We can create an instance of it without creating a new class or an anonymous inner class:
+```java
+// Create Map instance (this can be changed to parsing JSON into a Map instance using GSON for example)
+Mapper mapper = Mapper.obj(
+    "id", "abc123",
+    "email", "jonny@example.com",
+    ...
+);
+
+// Create UserProfile instance backed by the `mapper` Map, all keys will be get/set by the methods in UserProfile
+UserProfile userProfile = mapper.toReflectiveValidated(UserProfile.class);
+userProfile.getId();// = "abc123"
+userProfile.getEmail();// = "jonny@example.com"
+
+// This will return the same Mapper instance that was used to create the UserProfile instance
+Mapper sameMapperInstance = Mapper.fromReflective(userProfile);
+mapper == sameMapperInstance;// true
+
+// Provided you have setup GSON as described in Step 3, we can get a JSON-String from toString()
+String jsonString = mapper.toString();// {"id":"abc123","email":"jonny@example.com", ...
+
+Mapper mapperFromJsonString = Mapper.fromString(jsonString);
+```
+
+## Functionality
+
+The most powerful functionality of Reflective is to move seamlessly between `interface`, `Mapper` and `String` ([GSON](https://github.com/google/gson) ftw) instances.
+You can checkout the repo and look at the tests for more usage examples.
+
+### Mapper
+Mapper is a convenience class including much of the goodies of the Reflective functionality.
+If you have setup UtilMapper with GSON (described below in `Step 3`) then you can move between `interface`, `Mapper` and `String` with the following Mapper functions:
+- `Mapper.fromString()` - JSON-String param
+- `Mapper.fromReflective()` - ReflectiveMapBacked param (extend ReflectiveMapBacked in your interfaces to make this work seamlessly)
+- `Mapper.toString()` - returns JSON-String
+- `Mapper.toReflective()` - returns an interface instance of the type passed as parameter
+
+### MapperList
+If you need a List as your root object then you can use MapperList in much the same way as you would use Mapper to move between `interface`, `Mapper` and `String` instances.
 
 ## Enough! I want to use it, tell me how!
 
@@ -92,7 +125,7 @@ UtilMapper.initDefaultMapperListDeserializer(
     }
 );
 ```
-NOTE: You can extend `ReflectiveMapBacked` in your interfaces that you instantiate with Reflective to easily move between POJO<->Reflective<->String types.
+NOTE: You can extend `ReflectiveMapBacked` in your interfaces that you instantiate with Reflective to easily move between `interface`, `Mapper` and `String` instances.
 
 ## What else?
 

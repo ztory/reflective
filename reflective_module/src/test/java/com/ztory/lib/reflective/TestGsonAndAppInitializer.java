@@ -24,16 +24,17 @@ public class TestGsonAndAppInitializer {
 
   public static Gson init() {
     if (GSON == null) {
-      GSON = new GsonBuilder().
-          registerTypeAdapter(Double.class,  new JsonSerializer<Double>() {
-            @Override
-            public JsonElement serialize(Double src, Type typeOfSrc, JsonSerializationContext context) {
-              if (src == src.longValue()) {
-                return new JsonPrimitive(src.longValue());
-              }
-              return new JsonPrimitive(src);
-            }
-          }).create();
+      GsonBuilder gsonBuilder = new GsonBuilder();
+      gsonBuilder.registerTypeAdapter(Double.class,  new JsonSerializer<Double>() {
+        @Override
+        public JsonElement serialize(Double src, Type typeOfSrc, JsonSerializationContext context) {
+          if (src == src.longValue()) {
+            return new JsonPrimitive(src.longValue());
+          }
+          return new JsonPrimitive(src);
+        }
+      });
+      GSON = gsonBuilder.create();
     }
 
     if (UtilMapper.getDefaultKeyParser() == null) {
