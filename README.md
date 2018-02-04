@@ -76,7 +76,7 @@ allprojects {
 #### Step 2
 In your module `build.gradle` add this:
 ```
-compile 'com.ztory.lib.reflective:reflective_module:1.5.2'
+compile 'com.ztory.lib.reflective:reflective_module:1.6.0'
 ```
 
 #### Step 3
